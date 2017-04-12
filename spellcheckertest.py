@@ -13,6 +13,7 @@ class TestSpellChecker(unittest.TestCase):
 		self.assertTrue(self.SpellChecker.check_word('house.'))
 		self.assertNotEqual(0, len((self.SpellChecker.check_words('this is a test ooooo of funny words aaa another'))))
 		print((self.SpellChecker.check_words('this is a test ooooo of funny words aaa another')))
+		self.assertEqual({'word:ooooo  line:1   pos:15', 'word:aaa  line:1   pos:36'},self.SpellChecker.check_words('this is a test ooooo of funny words aaa another'))
 		return_data = (self.SpellChecker.check_document('spell.words'))
 		for lines in return_data:
 			print lines
