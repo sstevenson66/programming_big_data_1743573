@@ -1,51 +1,116 @@
+import os
 
-class CarRental(object):
+##   Create class object car
+#
+class Car(object):
+    def __init__(self, fuel):
+        self.in_out =   'i'
+        self.fuel   =   fuel
 
 
+##  Create Car Hire Firm Template
+#
+class CarRentalFirm(object):
+
+       
+    def __init__(self):
+        self.PetrolCars     =   []
+        self.DieselCars     =   []
+        self.HybridCars     =   []
+        self.ElectricCars   =   []
+    
+    def Setup_Firm(self):
+        for i in range(20):
+            self.PetrolCars.append(Car('Petrol '))
+        for i in range(8):
+            self.DieselCars.append(Car('Diesel '))
+            self.HybridCars.append(Car('Hybrid '))
+        for i in range(4):
+            self.ElectricCars.append(Car('Electric '))
+            
+    def return_availability(self, cartype, status):
+        return sum(p.in_out == status for p in cartype)
         
-    def __init__(self, fuel, in_stock):
-        self.fuel = fuel
-        self.in_stock = in_stock
-        self.out_for_rental = 0
+    def find_car(self, cartype, in_or_out):
+        for x in range(len(cartype)):
+            if cartype[x].in_out == in_or_out:
+                #print cartype[x].fuel, x
+                return x
                 
-    def return_stock_available(self):
-        return (self.in_stock - self.out_for_rental)
+    def rent_out_car(self, cartype):
+        available = self.return_availability(cartype, 'i')
+        if available == 0:
+           print("No " + cartype[0].fuel + "car available")
+           return -1
         
-    def show_details(self):
-        print(self.fuel + ' Stock:' + str(self.in_stock) + '.  Rented :' + str(self.out_for_rental) + '.  Available :' + str(self.in_stock - self.out_for_rental))
-    
-    def rent_out(self, number):
-        if number > (self.in_stock - self.out_for_rental):
-            print(str(number) + ' cars cannot be removed as only ' + str(self.in_stock - self.out_for_rental) + ' available')
-            return None
-        else:
-            self.out_for_rental = self.out_for_rental + number
-            self.show_details()
-            return self.return_stock_available()
-    
-    def return_car(self, number):
-        if number > self.out_for_rental:
-            print(str(number) + ' cannot be returned as only ' + str(self.out_for_rental) + ' out for rental')
-            return None
-        else:
-            self.out_for_rental = self.out_for_rental - number
-            self.show_details()
-            return self.return_stock_available()
-    
-    
+        x = self.find_car(cartype, 'i')
+        cartype[x].in_out = 'o'
+        available = self.return_availability(cartype, 'i')
+        #print "Number of " + cartype[0].fuel + "cars available : "+ str(available)
+        return available
+        
+    def return_car(self, cartype):
+        available = self.return_availability(cartype, 'o')
+        if available == 0:
+           print("No " + cartype[0].fuel + "car to return")
+           return -1
+        
+        x = self.find_car(cartype, 'o')
+        cartype[x].in_out = 'i'
+        available = self.return_availability(cartype, 'o')
+        #print "Number of " + cartype[0].fuel + "cars to return : "+ str(available)
+        return available
+        
+
+aungier = CarRentalFirm()
+aungier.Setup_Firm()
+
+def output_availability(CarType):
+    in_car = aungier.return_availability(CarType, 'i')
+    out_car = aungier.return_availability(CarType, 'o')
+    print('Total ' + CarType[0].fuel + 'Cars available/out = ' + str(in_car)+ '/' + str(out_car))
+    return in_car
+
 if __name__ == "__main__":
-    PetrolCars = CarRental("Petrol", 20)
-    DieselCars = CarRental("Diesel", 8)
-    ElectricCars = CarRental("Electric", 4)
-    HybridCars = CarRental("Hybrid", 8)
+    os.system('cls')
+    return_status = 0
+    while True:
+        if return_status != -1:
+            total_cars_available = output_availability(aungier.PetrolCars)
+            total_cars_available = total_cars_available + output_availability(aungier.DieselCars)
+            total_cars_available = total_cars_available + output_availability(aungier.ElectricCars)
+            total_cars_available = total_cars_available + output_availability(aungier.HybridCars)
+        print("\n")
+        rent_or_return = raw_input('Enter 1=Rent, 2=Return, Q=Quit : ').lower()
+        if rent_or_return == "q":
+           break
+        if rent_or_return == '1' or rent_or_return == '2':
+            if rent_or_return == '1':
+                if total_cars_available == 0:
+                    print "No cars available at all...."
+                    break
+            while True:
+                CarFuelType =   raw_input('Enter Car Fuel Type [P=Petrol, D=Diesel, E=Electric, H=Hybrid : ').lower()
+                if CarFuelType == 'p':
+                    CarType = aungier.PetrolCars
+                    break
+                elif CarFuelType == "d":
+                    CarType = aungier.DieselCars
+                    break
+                elif CarFuelType == 'e':
+                    CarType = aungier.ElectricCars
+                    break
+                elif CarFuelType == 'h':
+                    CarType = aungier.HybridCars
+                    break
+        print ("")
+        if rent_or_return == '1':
+            return_status = aungier.rent_out_car(CarType)
+        else:
+            return_status = aungier.return_car(CarType)
+        print("\n")
+
         
-    PetrolCars.show_details()
-    DieselCars.rent_out(5)
-    DieselCars.rent_out(8)
-    DieselCars.return_car(3)
-    DieselCars.return_car(8)
-        
+
     
-    
-        
     
