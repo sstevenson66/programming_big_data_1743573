@@ -14,12 +14,14 @@ class CarRentalFirm(object):
 
        
     def __init__(self):
+        #   Create NULL array for each fuel type
         self.PetrolCars     =   []
         self.DieselCars     =   []
         self.HybridCars     =   []
         self.ElectricCars   =   []
     
     def Setup_Firm(self):
+        #   Create Firm for number of cars of each fuel type as per the assignment
         for i in range(20):
             self.PetrolCars.append(Car('Petrol '))
         for i in range(8):
@@ -29,15 +31,18 @@ class CarRentalFirm(object):
             self.ElectricCars.append(Car('Electric '))
             
     def return_availability(self, cartype, status):
+        #   Function to return number of cars based on status i.e. i=car in, o=car out
         return sum(p.in_out == status for p in cartype)
         
     def find_car(self, cartype, in_or_out):
+        #   Find car based on status i=find next car in, o=find next car out
         for x in range(len(cartype)):
             if cartype[x].in_out == in_or_out:
                 #print cartype[x].fuel, x
                 return x
                 
     def rent_out_car(self, cartype):
+        #   Function to rent out car.  Returns number available after renting out car, otherwise returns -1 if no car available for rental.
         available = self.return_availability(cartype, 'i')
         if available == 0:
            print("No " + cartype[0].fuel + "car available")
@@ -50,6 +55,7 @@ class CarRentalFirm(object):
         return available
         
     def return_car(self, cartype):
+        #   Return car function.  Returns cars for that fuel type still out on rental, otherwise if no car out for returning then function returns -1.
         available = self.return_availability(cartype, 'o')
         if available == 0:
            print("No " + cartype[0].fuel + "car to return")
@@ -61,10 +67,13 @@ class CarRentalFirm(object):
         #print "Number of " + cartype[0].fuel + "cars to return : "+ str(available)
         return available
         
-
+#
+#   Create CarRentalFirm Class
 aungier = CarRentalFirm()
+#   Populate CarRentalFirm 
 aungier.Setup_Firm()
 
+#   Function to output car availability or car out for rental.
 def output_availability(CarType):
     in_car = aungier.return_availability(CarType, 'i')
     out_car = aungier.return_availability(CarType, 'o')
