@@ -56,6 +56,7 @@ def CreateMatrix(data):
 			#
 			HeaderDetails = data[idx + 1].split('|')
 			NewCommitHeader = CommitHeader(HeaderDetails[0], HeaderDetails[1], HeaderDetails[2], HeaderDetails[3])
+                        print(NewCommitHeader.Author)
 			i1 = (NewCommitHeader.DateTime.find("(") + 1)
 			i2 =  NewCommitHeader.DateTime.find(",", (NewCommitHeader.DateTime.find("(") + 1))
 			NewCommitHeader.DayOfWeek = (NewCommitHeader.DateTime[i1:i2])
@@ -68,20 +69,29 @@ def CreateMatrix(data):
 				NewCommitHeader.Changes.append(NewCommitDetail)
 				NewCommitHeader.NoOfChanges =	NewCommitHeader.NoOfChanges + 1
 			NewCommitFile.append(NewCommitHeader)
-			print "idx = ", idx, "next is ", data.index(sep, idx + 1), " NewCommitFile length = ", len(NewCommitFile)
+			###print "idx = ", idx, "next is ", data.index(sep, idx + 1), " NewCommitFile length = ", len(NewCommitFile)
 		idx = idx + 1
 	return NewCommitFile
 
 	
 if __name__ == "__main__":
-	data = load_data("changes_python.log")
-	FullData = CreateMatrix(data)
-	print(return_no_of_commits(FullData))
-	print(return_no_of_commits(FullData, "Thomas"))
-	print(return_no_of_change_types(FullData, "D"))
-	print(return_no_of_change_types(FullData, "A"))
-	print(return_no_of_change_types(FullData, "M"))
-	print(return_no_of_change_types(FullData, "D", "Thomas"))
+    data = load_data("changes_python.log")
+    FullData = CreateMatrix(data)
+    print FullData[0].Author, " 0"
+    FullData.sort(key = lambda i: (i.Author).lower())
+    print(return_no_of_commits(FullData))
+    prev_Author = " "
+    for f in FullData:
+        if f.Author <> prev_Author:
+            print("{:50} {:4}").format(f.Author, return_no_of_commits(FullData, f.Author))
+            prev_Author = f.Author
+    print "____"
+    print(return_no_of_commits(FullData))
+    print(return_no_of_commits(FullData, "Thomas"))
+    print(return_no_of_change_types(FullData, "D"))
+    print(return_no_of_change_types(FullData, "A"))
+    print(return_no_of_change_types(FullData, "M"))
+    print(return_no_of_change_types(FullData, "D", "Thomas"))
 	
 
 
