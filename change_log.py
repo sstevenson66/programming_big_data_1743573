@@ -1,7 +1,5 @@
 #  Commit has Revison Number, Name, Date etc
 #
-
-
 class CommitDetail(object):
 	def __init__(self, change_type, change_line):
 		self.change_type = change_type
@@ -29,7 +27,7 @@ def return_no_of_commits(data, author = None):
     found = 0
     if author == None:
         return len(data)
-    for idx in range(0, len(data) - 1):
+    for idx in range(0, len(data)):
         if author in data[idx].Author:
             found = found + 1
     return found
@@ -77,22 +75,24 @@ def CreateMatrix(data):
 if __name__ == "__main__":
     data = load_data("changes_python.log")
     FullData = CreateMatrix(data)
+    print(return_no_of_commits(FullData, "Vincent"))
+    
     print FullData[0].Author, " 0"
     FullData.sort(key = lambda i: (i.Author).lower())
     print(return_no_of_commits(FullData))
+    print(" Author                                               Commits   Del   Add   Mod")
+    print("--------------------------------------------------    -------   ---   ---   ---")
     prev_Author = " "
     for f in FullData:
         if f.Author <> prev_Author:
-            print("{:50} {:4}").format(f.Author, return_no_of_commits(FullData, f.Author))
+            print("{:50} {:10} {:5} {:5} {:5}").format(f.Author, return_no_of_commits(FullData, f.Author), return_no_of_change_types(FullData, "D", f.Author), return_no_of_change_types(FullData, "A", f.Author), return_no_of_change_types(FullData, "M", f.Author))
             prev_Author = f.Author
     print "____"
-    print(return_no_of_commits(FullData))
-    print(return_no_of_commits(FullData, "Thomas"))
+    #print(return_no_of_commits(FullData))
+    #print(return_no_of_commits(FullData, "Thomas"))
     print(return_no_of_change_types(FullData, "D"))
     print(return_no_of_change_types(FullData, "A"))
     print(return_no_of_change_types(FullData, "M"))
     print(return_no_of_change_types(FullData, "D", "Thomas"))
 	
-
-
-
+    
