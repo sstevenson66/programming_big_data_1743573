@@ -17,6 +17,21 @@ class TestCommits(unittest.TestCase):
         self.assertEqual(663,return_no_of_change_types(self.NewCommitFile, 'D', 'Thomas'))
         self.assertEqual(32,return_no_of_change_types(self.NewCommitFile, 'D', 'Vincent'))
         
+    def test_number_of_reads(self):
+        self.assertEqual(2,return_no_of_change_types(self.NewCommitFile, 'R'))
+        self.assertEqual(0,return_no_of_change_types(self.NewCommitFile, 'R', 'Thomas'))
+        self.assertEqual(1,return_no_of_change_types(self.NewCommitFile, 'R', 'Jimmy'))
+        
+    def test_number_of_add(self):
+        self.assertEqual(1056,return_no_of_change_types(self.NewCommitFile, 'A'))
+        self.assertEqual(87,return_no_of_change_types(self.NewCommitFile, 'A', 'Thomas'))
+        self.assertEqual(690,return_no_of_change_types(self.NewCommitFile, 'A', 'Jimmy'))
+        
+    def test_number_of_mrg(self):
+        self.assertEqual(1186,return_no_of_change_types(self.NewCommitFile, 'M'))
+        self.assertEqual(609,return_no_of_change_types(self.NewCommitFile, 'M', 'Thomas'))
+        self.assertEqual(401,return_no_of_change_types(self.NewCommitFile, 'M', 'Jimmy'))
+ 
     def test_number_of_commits(self):
         self.assertEqual(422, return_no_of_commits(self.NewCommitFile))
         self.assertEqual(26, return_no_of_commits(self.NewCommitFile, "Vincent"))

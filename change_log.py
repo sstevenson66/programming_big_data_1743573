@@ -1,11 +1,12 @@
 import os
 #
+#   Create object with change_type (D, A, R, M) and filename
 class CommitDetail(object):
     def __init__(self, change_type, change_line):
         self.change_type = change_type
         self.change_line = change_line
         
-        
+#   Create object for each commit
 class CommitHeader(object):
     def __init__(self, revision = None, author = None, date = None, commentLineCount = None, day = None):
         self.Revision = revision
@@ -17,11 +18,12 @@ class CommitHeader(object):
         self.Comment = []
         self.NoOfChanges = 0
 
-
+#   Read file and strip out characters at the end of the line
 def load_data(filename):
     data = [line.strip() for line in open(filename, "r")]
     return data
 
+#   Return no of commits looping through the data and counting if author matches or if author passed is None
 def return_no_of_commits(data, author = None):
     found = 0
     if author == None:
@@ -31,6 +33,7 @@ def return_no_of_commits(data, author = None):
             found = found + 1
     return found
     
+#   Return no of changes (if change_type is None then all changes, if author is None then all authors)
 def return_no_of_change_types(data, change_type = None, author = None):
     idx_change = 0
     found = 0
@@ -41,11 +44,14 @@ def return_no_of_change_types(data, change_type = None, author = None):
                     found = found + 1
     return found
     
+#   Important function to parse data and create objects for each commit.  Then insert object into new list called NewCommitFile
 def CreateMatrix(data):
+    #  Separator indicates start of commit except for final line
     sep = 72 * '-'
     idx = 0
     NewCommitFile = []
 
+    #   While loop excludes last line as this separator does not indicate the start of a commit
     while idx < len(data) - 1:
         if data[idx] == sep:
             #
@@ -53,12 +59,12 @@ def CreateMatrix(data):
             #
             HeaderDetails = data[idx + 1].split('|')
             NewCommitHeader = CommitHeader(HeaderDetails[0], HeaderDetails[1], HeaderDetails[2], HeaderDetails[3])
-            #   Now extract day of week from header
+            #   Now extract day of week from header (could be put into 1 line but left in 3 for readability)
             i1 = (NewCommitHeader.DateTime.find("(") + 1)
             i2 =  NewCommitHeader.DateTime.find(",", (NewCommitHeader.DateTime.find("(") + 1))
             NewCommitHeader.DayOfWeek = (NewCommitHeader.DateTime[i1:i2])
             #
-            #    Loop through path changes and add into CommitChange object
+            #    Loop through path changes and add into CommitChange object i.e. Change type (D, A, M, R)
             for idx in range(idx+3,data.index('', idx + 3)):
                 CommitDetails = data[idx].split(' ')
                 NewCommitDetail = CommitDetail(CommitDetails[0], CommitDetails[1])
@@ -74,14 +80,14 @@ def CreateMatrix(data):
 def return_comments(data, revision):
     for f in data:  
         if revision in f.Revision:
-            print f.Revision, " ", f.Comment
+            #print f.Revision, " ", f.Comment
             return len(f.Comment)
     return -1
             
             
 def display_results_by_author():
     FullData.sort(key = lambda i: (i.Author).lower())
-    print(" Author                                               Commits   Del   Add   Mod  Read     Total")
+    print(" Author                                               Commits   Del   Add   Mrg  Read     Total")
     print("--------------------------------------------------    -------   ---   ---   ---  ----     -----")
     prev_Author = " "
     
@@ -94,31 +100,31 @@ def display_results_by_author():
 
 def display_results_by_day():
     FullData.sort(key = lambda i: (i.DayOfWeek).lower())
-    print(" Day                                                  Commits   Del   Add   Mod  Read     Total")
+    print(" Day                                                  Commits   Del   Add   Mrg  Read     Total")
     print("--------------------------------------------------    -------   ---   ---   ---  ----     -----")
     prev_DayOfWeek = None
     total_commits = 0
     total_del = 0
     total_add = 0
     total_read = 0
-    total_mod = 0
+    total_mrg = 0
     
     for f in FullData:
         if f.DayOfWeek <> prev_DayOfWeek:
             if prev_DayOfWeek <> None:
-                print("{:50} {:10} {:5} {:5} {:5} {:5} {:9}").format(prev_DayOfWeek, total_commits, total_del, total_add, total_mod, total_read, (total_del + total_add + total_mod + total_read))
+                print("{:50} {:10} {:5} {:5} {:5} {:5} {:9}").format(prev_DayOfWeek, total_commits, total_del, total_add, total_mrg, total_read, (total_del + total_add + total_mrg + total_read))
                 total_commits = 0
                 total_add = 0
                 total_del = 0
                 total_read = 0
-                total_mod = 0
+                total_mrg = 0
             prev_DayOfWeek = f.DayOfWeek
         total_commits = total_commits + 1
         for g in f.Changes:
             if g.change_type == "D":
                 total_del = total_del + 1
             elif g.change_type == "M":
-                total_mod = total_mod + 1
+                total_mrg = total_mrg + 1
             elif g.change_type == "A":
                 total_add = total_add + 1
             elif g.change_type == "R":
@@ -131,9 +137,10 @@ def display_results_by_day():
     
 if __name__ == "__main__":
     os.system('cls')
+    print("\n")
     data = load_data("changes_python.log")
     FullData = CreateMatrix(data)
     display_results_by_author()
     print("\n\n")
     display_results_by_day()
-    print(return_comments(FullData, "r1540809"))
+    #print(return_comments(FullData, "r1540809"))
